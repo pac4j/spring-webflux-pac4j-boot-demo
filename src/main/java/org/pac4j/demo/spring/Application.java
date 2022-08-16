@@ -38,7 +38,7 @@ public class Application {
     @RequestMapping("/info.html")
     public String info(final ServerWebExchange exchange, final Map<String, Object> map) {
         final SessionStore sessionStore = new SpringWebfluxSessionStore(exchange);
-        final double averageWaitTime = SpringWebfluxSessionStore.getWaitedTime() / SpringWebfluxSessionStore.getNbWaitCalls();
+        final double averageWaitTime = ((double) SpringWebfluxSessionStore.getWaitedTime()) / SpringWebfluxSessionStore.getNbWaitCalls();
         map.put("averageWaitTime", averageWaitTime);
         map.put("sessionStore", sessionStore);
         return "info";
