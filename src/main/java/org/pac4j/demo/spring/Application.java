@@ -6,6 +6,9 @@ import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.springframework.context.SpringWebfluxSessionStore;
 import org.pac4j.springframework.context.SpringWebfluxWebContext;
+import org.pac4j.springframework.web.CallbackController;
+import org.pac4j.springframework.web.LogoutController;
+import org.pac4j.springframework.web.SecurityFilter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -38,8 +41,12 @@ public class Application {
     @RequestMapping("/info.html")
     public String info(final ServerWebExchange exchange, final Map<String, Object> map) {
         final SessionStore sessionStore = new SpringWebfluxSessionStore(exchange);
-        final double averageWaitTime = ((double) SpringWebfluxSessionStore.getWaitedTime()) / SpringWebfluxSessionStore.getNbWaitCalls();
+        final long waitedTime = SpringWebfluxSessionStore.getWaitedTime();
+        final double averageWaitTime = ((double) waitedTime) / SpringWebfluxSessionStore.getNbWaitCalls();
+        map.put("waitedTime", waitedTime);
         map.put("averageWaitTime", averageWaitTime);
+        final long consumedTime = SecurityFilter.getConsumedTime() + CallbackController.getConsumedTime() + LogoutController.getConsumedTime();
+        map.put("consumedTime", waitedTime);
         map.put("sessionStore", sessionStore);
         return "info";
     }
